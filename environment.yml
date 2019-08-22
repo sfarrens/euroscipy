@@ -1,0 +1,13 @@
+name: euroscipy-astro
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - astropy
+  - jupyter
+  - matplotlib
+  - numpy
+  - pip:
+    - modopt
+    - sf_tools
+    - git+https://github.com/CEA-COSMIC/pysap
