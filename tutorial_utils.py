@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-matplotlib.use("tkagg")
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pysap import load_transform
