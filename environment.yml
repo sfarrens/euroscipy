@@ -4,15 +4,15 @@ channels:
   - dsdale24
 dependencies:
   - python=3.7
-  - pip
+  - pip>=19.1.1
   - cmake
-  - astropy
-  - jupyter
-  - matplotlib
-  - numpy
-  - pyqtgraph
-  - pyqt5
+  - astropy>=3.2.1
+  - jupyter>=1.0.0
+  - matplotlib>=3.1.1
+  - numpy>=1.16.4
+  - pyqtgraph>=0.10.0
+  - pyqt5>=5.13.0
   - pip:
-    - modopt
-    - sf_tools
+    - modopt>=1.4.0
+    - sf_tools>=2.0.4
     - git+https://github.com/CEA-COSMIC/pysap
