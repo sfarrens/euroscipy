@@ -1,14 +1,16 @@
 name: euroscipy-astro
 channels:
   - conda-forge
+  - dsdale24
 dependencies:
+  - python=3.6
   - cmake
   - astropy
   - jupyter
   - matplotlib
   - numpy
   - pyqtgraph
-  - mesa-libgl-cos6-x86_64
+  - pyqt5
   - pip:
     - modopt
     - sf_tools
