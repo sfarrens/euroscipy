@@ -4,6 +4,7 @@ channels:
   - dsdale24
 dependencies:
   - python=3.6
+  - pip
   - cmake
   - astropy
   - jupyter
