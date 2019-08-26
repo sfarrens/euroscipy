@@ -1,29 +1,8 @@
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
-
-def regression_plot(x1, y1, x2, y2):
-
-    plt.plot(x1, y1, 'o', color="#19C3F5", label='Data')
-    plt.plot(x2, y2, '--', color='#FF4F5B', label='Model')
-    plt.title('Best Fit Line', fontsize=20)
-    plt.xlabel('x', fontsize=18)
-    plt.ylabel('y', fontsize=18)
-    plt.legend()
-    plt.show()
-
-
-def grad_plot(x, y1, y2, dy, point):
-
-    plt.plot(x, y1, 'b-', label='$||x||_2$')
-    plt.plot(x, y2, 'g-', label='$||x||_2^2$')
-    plt.plot(x[point], y2[point], 'ro')
-    plt.plot(x, dy, 'r--', label='Grad $||x_i||_2^2$')
-    plt.ylim(-0.1, 1.0)
-    plt.title('Convex L2-Norm')
-    plt.xlabel('$x$', fontsize=24)
-    plt.legend(loc='upper center', fontsize=20)
-    plt.show()
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def stem_plot(data, x_vals=None, title=None, imag=True, ylim=None, xlab=None,
@@ -35,8 +14,10 @@ def stem_plot(data, x_vals=None, title=None, imag=True, ylim=None, xlab=None,
     if ylim is None:
         ylim = (-1, 2.5)
 
+    plt.figure(figsize=(14, 8))
     (markers, stemlines, baseline) = plt.stem(x_vals, np.real(data),
-                                              label='Real')
+                                              label='Real',
+                                              use_line_collection=True)
     plt.setp(stemlines, linestyle="-", color="grey", linewidth=0.5)
     plt.setp(markers, marker='o', color="#19C3F5")
     plt.setp(baseline, linestyle="--", color="grey", linewidth=2)
@@ -67,6 +48,7 @@ def stem_plot(data, x_vals=None, title=None, imag=True, ylim=None, xlab=None,
 
 def line_plot(data, title=None, ylim=None, xlab=None):
 
+    plt.figure(figsize=(14, 8))
     plt.plot(data, color='#F76F66')
     plt.plot(np.zeros(data.size), linestyle="--", color="grey")
     if not isinstance(title, type(None)):
@@ -77,135 +59,116 @@ def line_plot(data, title=None, ylim=None, xlab=None):
     plt.show()
 
 
-def cost_plot(data):
-
-    plt.plot(data, linestyle='-', color='#FF4F5B')
-    plt.xlabel('Iteration', fontsize=18)
-    plt.ylabel('Cost', fontsize=18)
-    plt.title('Cost Function', fontsize=20)
-    plt.show()
-
-
 def display(data, title='example', shape=None, cmap='gist_stern', vmax=None,
             vmin=None):
 
     if not isinstance(shape, type(None)):
         data = data.reshape(shape)
 
+    plt.figure(figsize=(14, 8))
     cax = plt.imshow(np.abs(data), cmap=cmap, vmin=vmin, vmax=vmax)
     plt.title(title, fontsize=20)
     plt.colorbar(cax)
     plt.show()
 
 
-def wave_plot(n, signal, signal_fft):
+def image(data, title='', cmap='magma', vmax=3500):
+    """ Plot Image
 
-    max_n = max(n)
-    lines = [i * max_n / 4 for i in range(1, 4)]
-    labels = [i * max_n / 8 for i in np.arange(1, 8)[::2]]
+    Plot absolute value of input data array.
 
-    ax1 = plt.subplot(211)
-    ax1.plot(n, signal, '-', color='#0764DB')
-    ax1.plot([lines[0], lines[0]], [-1, 1], 'r--')
-    ax1.plot([lines[1], lines[1]], [-1, 1], 'r--')
-    ax1.plot([lines[2], lines[2]], [-1, 1], 'r--')
-    ax1.set_xticks([])
-    ax1.set_yticks([])
-    plt.text(labels[0], 0.8, 'A', color='#FF4F5B')
-    plt.text(labels[1], 0.8, 'B', color='#FF4F5B')
-    plt.text(labels[2], 0.8, 'C', color='#FF4F5B')
-    plt.text(labels[3], 0.8, 'D', color='#FF4F5B')
-    ax1.set_xlabel('Time', fontsize=18)
-    ax2 = plt.subplot(212)
-    ax2.plot(n, np.real(signal_fft), '-', color='#0764DB')
-    ax2.set_xlabel('Frequency', fontsize=18)
-    ax2.set_xticks([])
-    ax2.set_yticks([])
+    Parameters
+    ----------
+    data : np.ndarray
+        Input 2D-array
+    title : str, optional
+        Image title
+    cmap : str, optional
+        Colourmap, default is 'magma'
+    vmax : int, optional
+        Maximum pixel value, default is 3500
+
+    Raises
+    ------
+    TypeError
+        For invalid input data type
+
+    """
+
+    if not isinstance(data, np.ndarray) or data.ndim != 2:
+        raise TypeError('Input data must be a 2D numpy array.')
+
+    fig, axis = plt.subplots(1, 1, figsize=(6, 6))
+    im = axis.imshow(np.abs(data), cmap=cmap, vmin=0, vmax=vmax)
+    divider = make_axes_locatable(axis)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    plt.colorbar(im, cax=cax)
+    if title:
+        axis.set_title(title, fontsize=20)
     plt.show()
 
 
-def wave_plot2(t_slices, x_slices, x_sparse_slices):
+def decomp(data, n_cols=3, cmap='magma'):
+    """ Plot Decomposition
 
-    titles = ('A', 'B', 'C', 'D')
+    Plot absolute value of decomposed data array.
 
-    for i in range(len(t_slices)):
-        ax1 = plt.subplot(2, 4, i + 1)
-        ax1.plot(t_slices[i], x_slices[i], '-', color='#0764DB')
-        ax1.set_ylim(-1, 1)
-        ax1.set_xlabel('Time')
-        ax1.set_title(titles[i])
-        ax2 = plt.subplot(2, 4, i + 5)
-        ax2.plot(t_slices[i], x_sparse_slices[i], '-', color='#0764DB')
-        ax2.set_xlabel('Frequency')
-    plt.tight_layout()
+    Parameters
+    ----------
+    data : np.ndarray
+        Input 2D-array
+    n_cols : int, optional
+        Number of columns, default is 3
+    cmap : str, optional
+        Colourmap, default is 'magma'
+
+    Raises
+    ------
+    TypeError
+        For invalid input data type
+
+    """
+
+    if not isinstance(data, np.ndarray) or data.ndim != 3:
+        raise TypeError('Input data must be a 3D numpy array.')
+
+    n_plots = data.shape[0]
+    n_rows = (n_plots - 1) // n_cols + 1
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 5 * n_rows))
+    axes = axes.flatten()
+    vmaxs = [900] * (n_plots - 1) + [3500]
+    titles = (['Scale {}'.format(scale) for scale in range(1, n_plots)] +
+              ['Coarse Scale'])
+
+    for image, axis, vmax, title in zip(data, axes[:n_plots], vmaxs, titles):
+        im = axis.imshow(np.abs(image), cmap=cmap, vmax=vmax)
+        divider = make_axes_locatable(axis)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        fig.colorbar(im, ax=axis, cax=cax)
+        axis.set_title(title, fontsize=20)
+
+    for axis in axes[n_plots:]:
+        axis.axis('off')
+
     plt.show()
 
 
-def filter_plot(n, Fn, g, Fg, Fg_fft):
+def hist(data, sigma, mean):
 
-    fig, ax = plt.subplots(4, 1)
-    ax[0].plot(n, Fn, '-', color='#0764DB')
-    ax[0].set_title('$F[n]$', fontsize=24)
-    ax[1].plot(n, g, '-', color='#0764DB')
-    ax[1].set_title('$g[n-m]$', fontsize=24)
-    ax[2].plot(n, Fg, '-', color='#0764DB')
-    ax[2].set_title('$F \cdot g$', fontsize=24)
-    ax[3].plot(n, Fg_fft, '-', color='#0764DB')
-    ax[3].set_title('$\mathcal{F}(F \cdot g)$', fontsize=24)
-    for ax_i in ax:
-        ax_i.set_xticks([])
-        ax_i.set_yticks([])
-    plt.tight_layout()
-    plt.show()
+    fig, axis = plt.subplots(1, 1, figsize=(9, 6))
 
-
-def tf_plot(w):
-
-    fig, ax = plt.subplots(1, 1)
-    ax.imshow(w, aspect='auto', interpolation='nearest',
-              cmap='magma')
-    ax.set_xlabel('Time', fontsize=18)
-    ax.set_ylabel('Frequency', fontsize=18)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    plt.show()
-
-
-def wavelet_plot(n, Fn, haar, mex):
-
-    fig, ax = plt.subplots(1, 1)
-    ax.plot(n, Fn, '-', color='#0764DB', label=r'$F[n]$')
-    ax.plot(n, haar, 'r--', label=r'$\psi_{Haar}[n]$')
-    ax.plot(n, mex, 'm-.', label=r'$\psi_{Ricker}(t)$')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    plt.legend(fontsize=16)
-    plt.show()
-
-
-def cwt_plot(y):
-
-    fig, ax = plt.subplots(1, 1)
-    ax.imshow(y, aspect='auto', interpolation='nearest', cmap='magma')
-    ax.set_xlabel('$b$', fontsize=24)
-    ax.set_ylabel('$a$', fontsize=24)
-    ax.set_xticks([])
-    ax.set_yticks([])
-    plt.show()
-
-
-def starlet_display(data):
-
-    cmap = 'magma'
-
-    fig, ax = plt.subplots(2, 2)
-    ax[0, 0].imshow(data[0], cmap=cmap)
-    ax[0, 0].set_title('Wavelet Scale 1', fontsize=20)
-    ax[0, 1].imshow(data[1], cmap=cmap)
-    ax[0, 1].set_title('Wavelet Scale 2', fontsize=20)
-    ax[1, 0].imshow(data[2], cmap=cmap)
-    ax[1, 0].set_title('Wavelet Scale 3', fontsize=20)
-    ax[1, 1].imshow(data[3], cmap=cmap)
-    ax[1, 1].set_title('Coarse Scale', fontsize=20)
-    plt.tight_layout()
+    hist = axis.hist(data.ravel(), 25, histtype='step')
+    half_max = max(hist[0]) / 2
+    axis.axvspan(sigma, sigma + 10, alpha=0.5, color='red', label=r'$\sigma$')
+    axis.axvspan(-sigma, -(sigma + 10), alpha=0.5, color='red')
+    axis.axvspan(3 * sigma, 3 * sigma + 10, alpha=0.5, color='green',
+                 label=r'$3\sigma$')
+    axis.axvspan(-3 * sigma, -(3 * sigma + 10), alpha=0.5, color='green')
+    axis.axvspan(3 * sigma, 2000, alpha=0.5, color='grey')
+    axis.axvspan(-2000, -3 * sigma, alpha=0.5, color='grey')
+    axis.legend()
+    axis.set_xlim(-2000, 2000)
+    axis.set_title(r'$\sigma$ = {:.2f}, $\mu$ = {:.2f}'.format(sigma, mean),
+                   fontsize=16)
     plt.show()
