@@ -27,7 +27,9 @@ Please see the [CosmoStat website](http://www.cosmostat.org/tutorials) for more 
 ## Requirements
 ---
 
-It is recommended to run this tutorial via the interactive online [Binder](https://mybinder.org/v2/gh/sfarrens/euroscipy/master) interface if possible. Otherwise, the following requirements need to be installed to run it locally.
+
+
+ This tutorial can be run via the interactive online [Binder](https://mybinder.org/v2/gh/sfarrens/euroscipy/master) interface. However, it is recommended to run it locally during the session to avoid wifi issues. Note that the following requirements need to be installed beforehand.
 
 1. [python](https://www.python.org/) >=3.5
 1. [astropy](https://www.astropy.org/) >=3.2.1
