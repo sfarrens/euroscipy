@@ -27,24 +27,30 @@ Please see the [CosmoStat website](http://www.cosmostat.org/tutorials) for more 
 ## Requirements
 ---
 
-It is recommended to run this tutorial via the interactive online [Binder](https://mybinder.org/v2/gh/sfarrens/euroscipy/master) interface. To run it locally, however, the following requirements need to be installed.
+It is recommended to run this tutorial via the interactive online [Binder](https://mybinder.org/v2/gh/sfarrens/euroscipy/master) interface if possible. Otherwise, the following requirements need to be installed to run it locally.
 
-1. [Python](https://www.python.org/) >=3.5
+1. [python](https://www.python.org/) >=3.5
 1. [astropy](https://www.astropy.org/) >=3.2.1
 1. [jupyter](https://jupyter.org/) >=1.0.0
 1. [matplotlib](https://matplotlib.org/) >=3.1.1
 1. [modopt](https://cea-cosmic.github.io/ModOpt/) >=1.4.0
 1. [numpy](https://www.numpy.org/) >=1.16.4
-1. [PySAP](https://github.com/CEA-COSMIC/pysap)
+1. [pysap](https://github.com/CEA-COSMIC/pysap) (optional)
 1. [sf_tools](https://github.com/sfarrens/sf_tools) >=2.0.4
 
-All of the requirements can be built with the provided conda enviroment.
+All of the requirements can be built with the provided conda enviroment
 
 ```bash
 conda env create -f enviroment.yml
 ```
 
-> Note that PySAP requires cmake and a C++ compiler that supports OpenMP. See [here](https://github.com/CEA-COSMIC/pysap/blob/master/doc/macos_install.rst) for macOS help.
+or using `pip`. The PySAP package can be installed with `pip` as follows:
+
+```bash
+pip install git+https://github.com/CEA-COSMIC/pysap
+```
+
+> Note that PySAP requires cmake and a C++ compiler that supports OpenMP. See [here](https://github.com/CEA-COSMIC/pysap/blob/master/doc/macos_install.rst) for macOS help. All of the tutorial exercises can be run without PySAP if necessary.
 
 ## Notebooks
 ---
