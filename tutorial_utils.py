@@ -1,8 +1,52 @@
 import numpy as np
 import matplotlib
-matplotlib.use("Agg")
-from pysap import load_transform
 from sf_tools.image.stamp import FetchStamps
+matplotlib.use("Agg")
+try:
+    from pysap import load_transform
+except ImportError:
+    from astropy.convolution import convolve_fft
+    from modopt.interface.errors import warn
+    warn('PySAP not installed, using backup filters.')
+    import_pysap = False
+else:
+    import_pysap = True
+
+
+def convolve(data, kernel):
+    """ Convolve
+
+    Convolve input data with kernel.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        Input 2D data array
+    kernel : np.ndarray
+        Input 2D kernel array
+
+    Returns
+    -------
+    np.ndarray
+        Convolved array
+
+    Raises
+    ------
+    TypeError
+        For invalid input data type
+    TypeError
+        For invalid input kernel type
+
+    """
+
+    if not isinstance(data, np.ndarray) or data.ndim != 2:
+        raise TypeError('Input data must be a 2D numpy array.')
+
+    if not isinstance(kernel, np.ndarray) or data.ndim != 2:
+        raise TypeError('Input kernel must be a 2D numpy array.')
+
+    return convolve_fft(data, kernel, boundary='wrap', crop=False,
+                        nan_treatment='fill', normalize_kernel=False)
 
 
 def decompose(data, n_scales=4):
@@ -61,13 +105,22 @@ def decompose(data, n_scales=4):
     if not isinstance(n_scales, int) or n_scales < 1:
         raise TypeError('n_scales must be a positive integer.')
 
-    trans_name = 'BsplineWaveletTransformATrousAlgorithm'
-    trans = load_transform(trans_name)(nb_scale=n_scales,
-                                       padding_mode="symmetric")
-    trans.data = data
-    trans.analysis()
+    if import_pysap:
 
-    return np.array(trans.analysis_data, dtype=np.float)
+        trans_name = 'BsplineWaveletTransformATrousAlgorithm'
+        trans = load_transform(trans_name)(nb_scale=n_scales,
+                                           padding_mode="symmetric")
+        trans.data = data
+        trans.analysis()
+
+        res = np.array(trans.analysis_data, dtype=np.float)
+
+    else:
+
+        filters = np.load('data/filters_{}.npy'.format(n_scales))
+        res = np.array([convolve(data, f) for f in filters])
+
+    return res
 
 
 def recombine(data):
@@ -206,7 +259,7 @@ def noise_est(data, n_iter=3):
     return sigma / correction_factor
 
 
-def sigma_scales(sigma, kernel_shape=(51, 51)):
+def sigma_scales(sigma, n_scales=4, kernel_shape=(51, 51)):
     """ Sigma Scales
 
     Get rescaled sigma values for wavelet decomposition.
@@ -215,6 +268,8 @@ def sigma_scales(sigma, kernel_shape=(51, 51)):
     ----------
     sigma : float
         Noise standard deviation
+    n_scales : int, optional
+        Number of wavelet scales, default is 4
     kernel_shape : tuple, list or np.ndarray, optional
         Shape of dummy image kernel
 
@@ -250,4 +305,5 @@ def sigma_scales(sigma, kernel_shape=(51, 51)):
     dirac = np.zeros(kernel_shape, dtype=float)
     dirac[tuple(zip(kernel_shape // 2))] = 1.
 
-    return float(sigma) * np.linalg.norm(decompose(dirac), axis=(1, 2))[:-1]
+    return float(sigma) * np.linalg.norm(decompose(dirac, n_scales=n_scales),
+                                         axis=(1, 2))[:-1]
